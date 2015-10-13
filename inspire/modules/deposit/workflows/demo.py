@@ -19,21 +19,38 @@
 
 from flask import current_app
 
-
+from invenio_deposit.models import Deposition
 from invenio_deposit.types import SimpleRecordDeposition
 from invenio_deposit.tasks import dump_record_sip, \
     prepare_sip, process_sip_metadata, \
     render_form
+from invenio_workflows.definitions import WorkflowBase
 from invenio_workflows.tasks.workflows_tasks import log_info
+from invenio_workflows.tasks.logic_tasks import (
+    workflow_if,
+    workflow_else,
+)
+
+from inspire.modules.workflows.tasks.submission import (
+    halt_record_with_action,
+    halt_to_render,
+)
+from inspire.modules.workflows.tasks.actions import (
+    was_approved
+)
 
 from inspire.utils.helpers import get_record_from_model
 
 from ..demo_form import DemoForm
 
 
-class demo(SimpleRecordDeposition):
+class demo(SimpleRecordDeposition, WorkflowBase):
 
     """Simple demo submission for Invenio User Workshop."""
+
+    object_type = "submission"
+
+    model = Deposition
 
     workflow = [
         # Render form and wait for user to submit
@@ -46,8 +63,17 @@ class demo(SimpleRecordDeposition):
         # Process metadata to match your JSONAlchemy record model. This will
         # call process_sip_metadata() on your subclass.
         process_sip_metadata(),
-        # Print success message.
-        log_info('Hello World! The workflow finished successfully.')
+        halt_to_render,
+        halt_record_with_action(action="core_approval",
+                                message="Accept submission?"),
+        workflow_if(was_approved),
+        [
+            log_info('Yai! The update was approved.')
+        ],
+        workflow_else,
+        [
+            log_info('Oh no! The update was rejected.')
+        ],
     ]
 
     name = "Demo deposition"
@@ -56,6 +82,18 @@ class demo(SimpleRecordDeposition):
     draft_definitions = {
         'default': DemoForm,
     }
+
+    @staticmethod
+    def get_title(bwo):
+            return "User demo submission in progress"
+
+    @classmethod
+    def process_sip_metadata(cls, deposition, metadata):
+        metadata['collections'] = [{'primary': "HEP"}]
+
+    @staticmethod
+    def get_sort_data(obj):
+        return {}
 
     @classmethod
     def get_record(cls, obj, **kwargs):
