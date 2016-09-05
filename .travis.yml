@@ -35,12 +35,14 @@ env:
     - DOCKER_DATA="$HOME/docker_data"
     - DOCKER_VERSION=1.12.0-0~trusty
     - DOCKER_COMPOSE_VERSION=1.8.0
+    - SAUCE_USERNAME=inspire
   matrix:
     - SUITE=pep8
     - SUITE=unit
     - SUITE=disambiguation
     - SUITE=workflows
     - SUITE=integration
+    - SUITE=web
 
 matrix:
   fast_finish: true
@@ -79,3 +81,8 @@ after_success:
   # Coverage report contains Docker paths. We replace them, so that we can run Coveralls.
   - sed -i 's@\"/code/@'"\"$(pwd)/"'@g' .coverage
   - coveralls
+
+addons:
+  sauce_connect: true
+  jwt:
+    secure: Hu087Dyf7nxbwpbzVt2JDDMPzyu6pkafwWUwPhM6KCvxVEz3H5scrxahpDkNF59m0IXHnpdoPU0eRrcWsceQcnvAcuN9kDQ898Rwx2bkSeQNsxfckZ0u3gzKpYeB4Wf4NSncgRhBKjpEmtjEtUMYQjvGXUviE90okt+ibTiONoI=
