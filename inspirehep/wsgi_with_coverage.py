@@ -20,9 +20,24 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-[run]
-omit =
-  inspirehep/celery.py
-  inspirehep/cli.py
-  inspirehep/wsgi.py
-  inspirehep/wsgi_with_coverage.py
+"""INSPIREHEP WSGI app instantiation but with Coverage."""
+
+from __future__ import absolute_import, division, print_function
+
+# See: http://stackoverflow.com/a/20689873/1407497
+import atexit
+import coverage
+import sys
+
+cov = coverage.Coverage(data_suffix=True)
+cov.start()
+
+from .wsgi import application  # noqa
+
+
+def save_coverage():
+    print("saving coverage", file=sys.stderr)
+    cov.stop()
+    cov.save()
+
+atexit.register(save_coverage)
