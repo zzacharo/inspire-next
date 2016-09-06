@@ -63,6 +63,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
+  - "ip -4 addr show scope global"
   - "travis_retry docker-compose pull"
   - "travis_retry docker-compose build"
   - "travis_retry docker-compose -f docker-compose.deps.yml run --rm pip"

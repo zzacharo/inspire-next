@@ -31,22 +31,27 @@ import pytest
 
 from selenium import webdriver
 
+from inspirehep.config import SERVER_NAME
+
 @pytest.yield_fixture(scope='session')
 def driver():
     """Selenium driver."""
 
-    desired_cap = desired_cap = {
-        'platform': "Mac OS X 10.11",
-        'browserName': "firefox",
-        'version': "48",
-        'tunnel-identifier': environ['TRAVIS_JOB_NUMBER']
-    }
+    if 'TRAVIS' in environ:
+        desired_cap = desired_cap = {
+            'platform': "Mac OS X 10.11",
+            'browserName': "firefox",
+            'version': "48",
+            'tunnel-identifier': environ['TRAVIS_JOB_NUMBER']
+        }
 
-    driver = webdriver.Remote(
-        command_executor='http://{SAUCE_USERNAME}:{SAUCE_ACCESSKEY}@ondemand.saucelabs.com:80/wd/hub'.format(environ),
-        desired_capabilities=desired_cap)
+        driver = webdriver.Remote(
+            command_executor='http://{SAUCE_USERNAME}:{SAUCE_ACCESSKEY}@localhost:4445/wd/hub'.format(environ),
+            desired_capabilities=desired_cap)
+    else:
+        driver = webdriver.firefox()
 
     driver.implicitly_wait(10)
-    driver.get("http://localhost:5000")
+    driver.get("http://{0}".format(SERVER_NAME))
 
     yield driver
