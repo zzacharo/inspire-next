@@ -87,6 +87,33 @@ services:
       - redis
     depends_on:
       - worker
+  selenium:
+    extends:
+      service: service_base
+    command: py.test tests/selenium
+    volumes_from:
+      - static
+    links:
+      - database
+      - indexer
+      - rabbitmq
+      - redis
+      - web
+    depends_on:
+      - worker
+  web:
+    extends:
+      service: service_base
+    command: gunicorn -b 0.0.0.0:5000 -t 3600 --access-logfile "-" inspirehep.wsgi_with_coverage
+    volumes_from:
+      - static
+    ports:
+      - "5000:5000"
+    links:
+      - database
+      - indexer
+      - rabbitmq
+      - redis
   worker:
     container_name: inspirehep-test-worker
     extends:

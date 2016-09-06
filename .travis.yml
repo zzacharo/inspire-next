@@ -37,11 +37,11 @@ env:
     - DOCKER_COMPOSE_VERSION=1.8.0
     - SAUCE_USERNAME=inspire
   matrix:
-    - SUITE=pep8
-    - SUITE=unit
-    - SUITE=disambiguation
-    - SUITE=workflows
-    - SUITE=integration
+    #- SUITE=pep8
+    #- SUITE=unit
+    #- SUITE=disambiguation
+    #- SUITE=workflows
+    #- SUITE=integration
     - SUITE=web
 
 matrix:
@@ -63,11 +63,11 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
-  - "HOSTIP=`ip -4 addr show scope global dev eth0 | grep inet | awk '{print \$2}' | cut -d / -f 1`"
-  - "travis_retry docker-compose pull"
-  - "travis_retry docker-compose build"
-  - "travis_retry docker-compose -f docker-compose.deps.yml run --rm pip"
-  - "docker-compose -f docker-compose.deps.yml run --rm assets"
+  - HOSTIP=`ip -4 addr show scope global dev eth0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
+  - travis_retry docker-compose pull
+  - travis_retry docker-compose build
+  - travis_retry docker-compose -f docker-compose.deps.yml run --rm pip
+  - docker-compose -f docker-compose.deps.yml run --rm assets
 
 script:
   - "docker-compose -f docker-compose.test.yml run --rm ${SUITE}"
