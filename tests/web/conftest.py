@@ -46,7 +46,7 @@ def driver():
         }
 
         driver = webdriver.Remote(
-            command_executor='http://{SAUCE_USERNAME}:{SAUCE_ACCESSKEY}@localhost:4445/wd/hub'.format(environ),
+            command_executor='http://{SAUCE_USERNAME}:{SAUCE_ACCESSKEY}@docker:4445/wd/hub'.format(environ),
             desired_capabilities=desired_cap)
     else:
         driver = webdriver.firefox()
