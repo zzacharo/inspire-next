@@ -41,3 +41,5 @@ services:
     volumes:
         - ".:/code"
         - "${DOCKER_DATA}/tmp/virtualenv:/virtualenv"
+  extra_hosts:
+    - "docker:${HOSTIP}"
