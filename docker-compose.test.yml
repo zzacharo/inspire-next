@@ -147,3 +147,5 @@ services:
     extends:
       file: services.yml
       service: static
+extra_hosts:
+  - "docker:${HOSTIP}"
