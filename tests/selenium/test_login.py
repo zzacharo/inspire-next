@@ -26,9 +26,10 @@ def test_login(driver, small_app):
     sign_in = driver.find_element_by_link_text('Sign in')
     assert sign_in
     sign_in.click()
+    import time; time.sleep(3)
     assert 'Please sign in to suggest content to INSPIRE' in driver.page_source
-    email = driver.find_element_id('email')
+    email = driver.find_element_by_id('email')
     email.send_keys('admin@inspirehep.net')
-    password = driver.find_element_id('password')
+    password = driver.find_element_by_id('password')
     password.send_keys('123456')
-    
+

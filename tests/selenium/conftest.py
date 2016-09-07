@@ -37,7 +37,7 @@ from invenio_search import current_search_client as es
 from inspirehep.config import SERVER_NAME
 from inspirehep.factory import create_app
 
-@pytest.yield_fixture(scope='session')
+@pytest.yield_fixture(scope='module')
 def driver():
     """Selenium driver."""
 
@@ -55,10 +55,12 @@ def driver():
     else:
         driver = webdriver.Firefox()
 
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(3)
     driver.get("http://{0}".format(SERVER_NAME))
 
     yield driver
+
+    driver.quit()
 
 
 @pytest.yield_fixture(scope='module')
