@@ -37,31 +37,6 @@ from invenio_search import current_search_client as es
 from inspirehep.config import SERVER_NAME
 from inspirehep.factory import create_app
 
-@pytest.yield_fixture(scope='module')
-def driver():
-    """Selenium driver."""
-
-    if 'TRAVIS' in environ:
-        desired_cap = desired_cap = {
-            'platform': "Mac OS X 10.11",
-            'browserName': "firefox",
-            'version': "48",
-            'tunnel-identifier': environ['TRAVIS_JOB_NUMBER']
-        }
-
-        driver = webdriver.Remote(
-            command_executor='http://{SAUCE_USERNAME}:{SAUCE_ACCESSKEY}@docker:4445/wd/hub'.format(environ),
-            desired_capabilities=desired_cap)
-    else:
-        driver = webdriver.Firefox()
-
-    driver.implicitly_wait(3)
-    driver.get("http://{0}".format(SERVER_NAME))
-
-    yield driver
-
-    driver.quit()
-
 
 @pytest.yield_fixture(scope='module')
 def small_app(request):

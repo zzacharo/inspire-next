@@ -90,7 +90,7 @@ services:
   selenium:
     extends:
       service: service_base
-    command: py.test tests/selenium
+    command: py.test --driver SauceLabs --capability browserName Firefox tests/selenium
     volumes_from:
       - static
     links:

@@ -116,7 +116,8 @@ extras_require = {
         'ipdb',
         'kwalitee',
         'honcho',
-        'gunicorn'
+        'gunicorn',
+        'pytest-selenium',
     ]
 }
 
