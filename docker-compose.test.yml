@@ -98,8 +98,8 @@ services:
       - indexer
       - rabbitmq
       - redis
-      - web
     depends_on:
+      - web
       - worker
     environment:
       - SAUCELABS_USERNAME=${SAUCE_USERNAME}

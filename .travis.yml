@@ -42,7 +42,7 @@ env:
     #- SUITE=disambiguation
     #- SUITE=workflows
     #- SUITE=integration
-    - SUITE=web
+    - SUITE=selenium
 
 matrix:
   fast_finish: true
