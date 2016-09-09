@@ -63,7 +63,6 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
-  - HOSTIP=`ip -4 addr show scope global dev eth0 | grep inet | awk '{print \$2}' | cut -d / -f 1`
   - travis_retry docker-compose pull
   - travis_retry docker-compose build
   - travis_retry docker-compose -f docker-compose.deps.yml run --rm pip

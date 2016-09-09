@@ -35,6 +35,9 @@ services:
       - CACHE_REDIS_URL=redis://redis:6379/0
       - ACCOUNTS_SESSION_REDIS_URL=redis://redis:6379/2
       - SEARCH_ELASTIC_HOSTS=indexer
+      - SAUCELABS_USERNAME
+      - SAUCELABS_API_KEY
+      - TRAVIS_JOB_NUMBER
 
   pep8:
     extends:
@@ -90,7 +93,7 @@ services:
   selenium:
     extends:
       service: service_base
-    command: py.test --driver SauceLabs --capability browserName Firefox tests/selenium
+    command: py.test --driver SauceLabs --capability browserName Firefox --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} tests/selenium
     volumes_from:
       - static
     links:
@@ -147,5 +150,3 @@ services:
     extends:
       file: services.yml
       service: static
-extra_hosts:
-  - "docker:${HOSTIP}"
