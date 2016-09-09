@@ -35,9 +35,6 @@ services:
       - CACHE_REDIS_URL=redis://redis:6379/0
       - ACCOUNTS_SESSION_REDIS_URL=redis://redis:6379/2
       - SEARCH_ELASTIC_HOSTS=indexer
-      - SAUCELABS_USERNAME
-      - SAUCELABS_API_KEY
-      - TRAVIS_JOB_NUMBER
 
   pep8:
     extends:
@@ -104,6 +101,11 @@ services:
       - web
     depends_on:
       - worker
+    environment:
+      - SAUCELABS_USERNAME=${SAUCE_USERNAME}
+      - SAUCELABS_API_KEY=${SAUCE_ACCESS_KEY}
+      - TRAVIS_JOB_NUMBER
+
   web:
     extends:
       service: service_base
