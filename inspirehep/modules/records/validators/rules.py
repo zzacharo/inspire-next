@@ -1,6 +1,6 @@
 #
 # This file is part of INSPIRE.
-# Copyright (C) 2014, 2015, 2016 CERN.
+# Copyright (C) 2014, 2015, 2016, 2017 CERN.
 #
 # INSPIRE is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ from .helpers import (
 from jsonschema import ValidationError
 from idutils import is_isbn
 import pycountry
-from collections import deque
 
 
 '''
@@ -43,41 +42,45 @@ Error Validator Functions
 
 def check_for_author_or_corporate_author_to_exist(record):
     if all(k not in record for k in ['authors', 'corporate_author']):
-        yield ValidationError(path=deque(['']),
-                              message='Neither an author nor a corporate author found.')
+        yield ValidationError(path=[''],
+                              message='Neither an author nor a corporate author found.',
+                              cause='Error')
 
 
 def check_document_type_if_book_series_exist(record):
     if 'book_series' in record:
         required_values = ['book', 'proceedings', 'thesis']
         if check_field_values_not_in_required_values_for_record(record, 'document_type', required_values):
-            yield ValidationError(path=deque(['']),
+            yield ValidationError(path=[''],
                                   message=FIELD_REQUIRE_FIELD_VALUES_TEMPLATE.format(
                                       field='book_series',
                                       required='document_type',
-                                      values=required_values))
+                                      values=required_values),
+                                  cause='Error')
 
 
 def check_document_type_if_isbns_exist(record):
     if 'isbns' in record:
         required_values = ['book', 'proceedings', 'thesis']
         if check_field_values_not_in_required_values_for_record(record, 'document_type', required_values):
-            yield ValidationError(path=deque(['']),
+            yield ValidationError(path=[''],
                                   message=FIELD_REQUIRE_FIELD_VALUES_TEMPLATE.format(
                                       field='isbns',
                                       required='document_type',
-                                      values=required_values))
+                                      values=required_values),
+                                  cause='Error')
 
 
 def check_document_type_if_cnum_exist(record):
     if check_if_field_exists_in_dict_list_x_times('cnum', record.get('publication_info', [])):
         required_values = ['proceedings', 'conference paper']
         if check_field_values_not_in_required_values_for_record(record, 'document_type', required_values):
-            yield ValidationError(path=deque(['']),
+            yield ValidationError(path=[''],
                                   message=FIELD_REQUIRE_FIELD_VALUES_TEMPLATE.format(
                                       field='cnum',
                                       required='document_type',
-                                      values=required_values))
+                                      values=required_values),
+                                  cause='Error')
 
 
 def check_document_type_if_thesis_info_exist(record):
@@ -85,7 +88,7 @@ def check_document_type_if_thesis_info_exist(record):
     if 'thesis_info' in record:
         required_values = ['thesis']
         if check_field_values_not_in_required_values_for_record(record, 'document_type', required_values):
-            yield ValidationError(path=deque(['']),
+            yield ValidationError(path=[''],
                                   message=FIELD_REQUIRE_FIELD_VALUES_TEMPLATE.format(
                                       field='thesis_info',
                                       required='document_type',
@@ -96,9 +99,9 @@ def check_document_type_if_thesis_info_exist(record):
 def check_if_isbn_is_valid(record):
     def _check_isbn_is_valid(field, value, prop, index, errortype):
         if not is_isbn(value):
-            yield ValidationError(path=deque(['{field}/{index}/{prop}'.format(field=field,
-                                                                               prop=prop,
-                                                                               index=index)]),
+            yield ValidationError(path=['{field}/{index}/{prop}'.format(field=field,
+                                                                        prop=prop,
+                                                                        index=index)],
                                   message=FIELD_VALIDATION_TEMPLATE.format(
                                       field='isbns',
                                       value=value
@@ -120,12 +123,12 @@ def check_if_isbn_exist_in_other_records(record):
         yield e
 
 
-def check_languages_if_valid_iso(record):
+def check_if_languages_are_valid_iso(record):
     def _check_language(language, index):
         try:
             pycountry.languages.lookup(language)
         except LookupError:
-            yield ValidationError(path=deque(['languages/{index}'.format(index=index)]),
+            yield ValidationError(path=['languages/{index}'.format(index=index)],
                                   message=FIELD_VALIDATION_TEMPLATE.format(
                                       field='languages',
                                       value=language

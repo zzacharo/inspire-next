@@ -22,7 +22,7 @@
 
 from jsonschema import Draft4Validator
 from jsonschema.validators import extend, RefResolver
-from inspire_schemas.utils import get_schema_path, load_schema
+from inspire_schemas.utils import load_schema
 from rules import (
     check_for_author_or_corporate_author_to_exist,
     check_if_isbn_exist_in_other_records,
@@ -31,7 +31,7 @@ from rules import (
     check_document_type_if_isbns_exist,
     check_document_type_if_cnum_exist,
     check_document_type_if_thesis_info_exist,
-    check_languages_if_valid_iso
+    check_if_languages_are_valid_iso
 )
 
 LITERATURE_VALIDATORS_LIST = [
@@ -42,7 +42,7 @@ LITERATURE_VALIDATORS_LIST = [
     check_document_type_if_isbns_exist,
     check_document_type_if_cnum_exist,
     check_document_type_if_thesis_info_exist,
-    check_languages_if_valid_iso
+    check_if_languages_are_valid_iso
 ]
 
 

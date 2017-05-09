@@ -71,9 +71,10 @@ class InspireRecord(Record):
     def _delete(self, *args, **kwargs):
         super(InspireRecord, self).delete(*args, **kwargs)
 
-    def commit(self, validators=None):
+    def commit(self, validator=None):
         """Override commit() to pass custom validators"""
-        super(InspireRecord, self).commit(validators)
+
+        super(InspireRecord, self).commit(validator=validator)
 
 
 class ESRecord(InspireRecord):

@@ -27,18 +27,28 @@ from invenio_db import db
 from jsonschema import ValidationError
 from collections import deque
 
+FIELD_VALUE_REQUIRE_FIELD_TEMPLATE = "'{field}' field value '{value}' requires field '{required}' to exist."
 FIELD_REQUIRE_FIELD_VALUES_TEMPLATE = "'{field}' field requires '{required}' field to have " \
                                       "at least one of the values {values}."
+FIELD_REQUIRE_FIELD_TEMPLATE = "'{field}' field requires '{required}' field to exist."
 FIELD_DUPLICATE_VALUES_FOUND_TEMPLATE = "'{field}' field with value '{value}' found in more than one record."
 GET_RESULTS_FOR_FIELD_PROPERTY_QUERYSTRING_TEMPLATE = "SELECT id FROM records_metadata as r, " \
                                                       "json_array_elements(r.json -> '{field}') " \
                                                       "as elem WHERE elem ->> '{prop}'='{value}'"
 FIELD_VALIDATION_TEMPLATE = "Field '{field}' with value '{value}' is not valid."
+SCHEMA_FIELDS_THAT_CAN_CONTAIN_DATE = {
+    '_desy_bookkeeping': ['date'],
+    'imprints': ['date'],
+    'thesis_info': ['date', 'defense_date'],
+    '_fft': ['creation_datetime'],
+    'legacy_creation_date': [],
+    'preprint_date': []
+}
 
 
 def check_field_values_not_in_required_values_for_record(record, field, required_values):
-    document_type_values = record.get(field, [])
-    common_list = [x for x in document_type_values if x in required_values]
+    field_values = record.get(field, [])
+    common_list = [x for x in field_values if x in required_values]
     return not common_list
 
 
