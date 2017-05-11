@@ -34,6 +34,22 @@ from rules import (
     check_if_languages_are_valid_iso
 )
 
+# from warning_rules import (
+#     check_date_present_in_record,
+#     check_if_journal_title_is_canonical,
+#     check_affiliations_if_authors_exist,
+#     check_thesis_info_if_doctype_value_thesis_present,
+#     check_cnum_if_doctype_value_proceedings_present,
+#     check_cnum_if_doctype_value_conference_paper_present,
+#     check_if_2_cnum_exist_in_publication_info,
+#     check_doctype_values_if_cnum_present,
+#     check_accelerator_experiments_if_collaborations_exist,
+#     check_if_reportnumber_exist_in_other_records,
+#     check_accelerator_experiments_for_experiment,
+#     check_thesis_info_and_supervisor_to_exist_in_thesis,
+#     check_if_no_pages_for_publication_info
+# )
+
 LITERATURE_VALIDATORS_LIST = [
     check_for_author_or_corporate_author_to_exist,
     check_if_isbn_exist_in_other_records,
@@ -43,6 +59,19 @@ LITERATURE_VALIDATORS_LIST = [
     check_document_type_if_cnum_exist,
     check_document_type_if_thesis_info_exist,
     check_if_languages_are_valid_iso
+    # check_date_present_in_record,
+    # check_if_journal_title_is_canonical,
+    # check_affiliations_if_authors_exist,
+    # check_thesis_info_if_doctype_value_thesis_present,
+    # check_cnum_if_doctype_value_proceedings_present,
+    # check_cnum_if_doctype_value_conference_paper_present,
+    # check_if_2_cnum_exist_in_publication_info,
+    # check_doctype_values_if_cnum_present,
+    # check_accelerator_experiments_if_collaborations_exist,
+    # check_if_reportnumber_exist_in_other_records,
+    # check_accelerator_experiments_for_experiment,
+    # check_thesis_info_and_supervisor_to_exist_in_thesis,
+    # check_if_no_pages_for_publication_info
 ]
 
 

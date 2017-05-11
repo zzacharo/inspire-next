@@ -36,14 +36,17 @@ GET_RESULTS_FOR_FIELD_PROPERTY_QUERYSTRING_TEMPLATE = "SELECT id FROM records_me
                                                       "json_array_elements(r.json -> '{field}') " \
                                                       "as elem WHERE elem ->> '{prop}'='{value}'"
 FIELD_VALIDATION_TEMPLATE = "Field '{field}' with value '{value}' is not valid."
-SCHEMA_FIELDS_THAT_CAN_CONTAIN_DATE = {
-    '_desy_bookkeeping': ['date'],
-    'imprints': ['date'],
-    'thesis_info': ['date', 'defense_date'],
-    '_fft': ['creation_datetime'],
-    'legacy_creation_date': [],
-    'preprint_date': []
-}
+
+SCHEMA_DATE_PATHS = [
+    '_desy_bookkeeping.date',
+    'imprints.date',
+    'thesis_info.date',
+    'thesis_info.defence_date',
+    '_fft.creation_datetime',
+    'publication_info.year',
+    'legacy_creation_date',
+    'preprint_date'
+]
 
 
 def check_field_values_not_in_required_values_for_record(record, field, required_values):
