@@ -30,6 +30,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from . import holding_panel_literature_list
+from .create_literature import check_expected_data_in_record
 from ..arsenic import Arsenic, ArsenicResponse
 from inspirehep.bat.EC import GetText, TryClick
 
@@ -39,19 +40,22 @@ def go_to():
     holding_panel_literature_list.click_first_record()
 
 
-def load_submitted_record(input_data):
+def load_submitted_record(expected_data=None):
     def _load_submitted_record():
-        return (
-            'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.' in record and
-            'Submitted by admin@inspirehep.net\non' in record and
-            'Wisconsin U., Madison' in record and
-            'My Title For Test' in record and
-            'Brown, James' in record and
-            'White, Barry' in record and
-            'Accelerators' in record and
-            'Computing' in record and
-            'CERN' in record
-        )
+        if expected_data:
+            return check_expected_data_in_record(expected_data, record)
+        else:
+            return (
+                'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.' in record and
+                'Submitted by admin@inspirehep.net\non' in record and
+                'Wisconsin U., Madison' in record and
+                'My Title For Test' in record and
+                'Brown, James' in record and
+                'White, Barry' in record and
+                'Accelerators' in record and
+                'Computing' in record and
+                'CERN' in record
+            )
 
     try:
         record = WebDriverWait(Arsenic(), 10).until(
@@ -68,7 +72,7 @@ def load_submitted_record(input_data):
         ).text
     except (ElementNotVisibleException, WebDriverException):
         go_to()
-        record = load_submitted_record(input_data)
+        record = load_submitted_record()
 
     return ArsenicResponse(_load_submitted_record)
 

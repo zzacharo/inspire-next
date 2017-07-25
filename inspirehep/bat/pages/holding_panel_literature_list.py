@@ -33,6 +33,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from ..arsenic import Arsenic, ArsenicResponse
+from .create_literature import check_expected_data_in_record
 from inspirehep.bat.EC import GetText
 
 
@@ -75,16 +76,19 @@ def click_first_record():
             (By.XPATH, '(//div[@class="ng-scope"])[2]')))
 
 
-def load_submitted_record():
+def load_submitted_record(expected_data=None):
     def _load_submitted_record():
-        return (
-            'Computing' in record and
-            'Accelerators' in record and
-            'My Title For Test' in record and
-            'admin@inspirehep.net' in record and
-            'White, Barry; Brown, James' in record and
-            'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.' in record
-        )
+        if expected_data:
+            return check_expected_data_in_record(expected_data, record)
+        else:
+            return (
+                'Computing' in record and
+                'Accelerators' in record and
+                'My Title For Test' in record and
+                'admin@inspirehep.net' in record and
+                'White, Barry; Brown, James' in record and
+                'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.' in record
+            )
 
     record = force_load_record('//div[@class="row hp-item ng-scope"][1]/div/div/div[2]/holding-pen-template-handler/div[3]/a')
     return ArsenicResponse(_load_submitted_record)

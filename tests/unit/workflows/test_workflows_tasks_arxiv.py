@@ -271,15 +271,6 @@ def test_arxiv_plot_extract_populates_files_with_plots(mock_os):
 
         assert arxiv_plot_extract(obj, eng) is None
 
-        expected = obj.files['figure1']['description']
-        result = (
-            '00000 Difference (in MeV) between the theoretical and '
-            'experimental masses for the 2027 selected nuclei as a '
-            'function of the mass number.'
-        )
-
-        assert expected == result
-
         expected = 'Added 1 plots.'
         result = obj.log._info.getvalue()
 

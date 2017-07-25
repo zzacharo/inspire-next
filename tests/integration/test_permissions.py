@@ -157,6 +157,7 @@ def test_inspire_search_filter_public_collection(app, app_client, user_info, tot
     # Doing a client request creates a request context that allows the
     # assert to correctly use the logged in user.
     app_client.get('/search')
+
     assert LiteratureSearch().to_dict()['query']['bool'][
         'filter'] == es_filter
     assert LiteratureSearch().count() == total_count

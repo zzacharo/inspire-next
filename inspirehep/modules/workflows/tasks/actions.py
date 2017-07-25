@@ -37,6 +37,7 @@ from inspirehep.modules.workflows.utils import (
 )
 from inspirehep.utils.record import get_arxiv_id
 from inspirehep.utils.url import is_pdf_link
+from inspire_schemas.builders import LiteratureBuilder
 
 from .refextract import extract_references
 from ..utils import download_file_to_workflow, with_debug_logging
@@ -208,6 +209,14 @@ def submission_fulltext_download(obj, eng):
         )
 
         if pdf:
+            lb = LiteratureBuilder(source=obj.data['acquisition_source']['source'], record=obj.data)
+            lb.add_document(
+                filename,
+                fulltext=True,
+                original_url=submission_pdf,
+                url='/api/files/{bucket}/{key}'.format(bucket=obj.files[filename].bucket_id, key=filename)
+            )
+            obj.data = lb.record
             obj.log.info('PDF provided by user from %s', submission_pdf)
             return obj.files[filename].file.uri
         else:

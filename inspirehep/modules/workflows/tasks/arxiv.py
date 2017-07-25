@@ -40,6 +40,7 @@ from dojson.contrib.marc21.utils import create_record
 from inspire_dojson.hep import hep
 from inspire_schemas.utils import classify_field
 from inspirehep.modules.workflows.utils import convert
+from inspire_schemas.builders import LiteratureBuilder
 from inspirehep.utils.record import get_arxiv_categories, get_arxiv_id
 from inspirehep.utils.url import is_pdf_link
 
@@ -84,6 +85,16 @@ def arxiv_fulltext_download(obj, eng):
     )
 
     if pdf:
+        lb = LiteratureBuilder(source='arxiv', record=obj.data)
+        lb.add_document(
+            filename,
+            fulltext=True,
+            hidden=True,
+            material='preprint',
+            original_url=url,
+            url='/api/files/{bucket}/{key}'.format(bucket=obj.files[filename].bucket_id, key=filename)
+        )
+        obj.data = lb.record
         obj.log.info('PDF retrieved from arXiv for %s', arxiv_id)
     else:
         obj.log.error('Cannot retrieve PDF from arXiv for %s', arxiv_id)
@@ -96,6 +107,7 @@ def arxiv_package_download(obj, eng):
     :param obj: Workflow Object to process
     :param eng: Workflow Engine processing the object
     """
+
     arxiv_id = get_arxiv_id(obj.data)
     filename = secure_filename('{0}.tar.gz'.format(arxiv_id))
     tarball = download_file_to_workflow(
@@ -134,12 +146,26 @@ def arxiv_plot_extract(obj, eng):
                 current_app.logger.exception(err)
                 return
 
-            for idx, plot in enumerate(plots):
+            lb = LiteratureBuilder(source='arxiv', record=obj.data)
+            for index, plot in enumerate(plots):
+                plot_name = plot.get('name')
+                files_keys = obj.files.keys
+                key = plot_name
+                if plot_name in files_keys:
+                    key = '{number}_{name}'.format(number=index, name=plot_name)
+
                 with open(plot.get('url')) as plot_file:
-                    obj.files[plot.get('name')] = plot_file
-                obj.files[plot.get('name')]['description'] = u'{0:05d} {1}'.format(
-                    idx, ''.join(plot.get('captions', []))
+                    obj.files[key] = plot_file
+
+                lb.add_figure(
+                    key=key,
+                    caption=''.join(plot.get('captions', [])),
+                    label=plot.get('label'),
+                    material='preprint',
+                    url='/api/files/{bucket}/{key}'.format(bucket=obj.files[key].bucket_id, key=key)
                 )
+
+            obj.data = lb.record
             obj.log.info('Added {0} plots.'.format(len(plots)))
 
 

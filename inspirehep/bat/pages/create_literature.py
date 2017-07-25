@@ -372,7 +372,7 @@ def write_affiliation(affiliation, expected_data):
     return ArsenicResponse(_write_affiliation)
 
 
-def submit_arxiv_id(arxiv_id, expected_data):
+def import_arxiv_id(arxiv_id, expected_data):
     def _submit_arxiv_id():
         return expected_data == output_data
 
@@ -454,6 +454,40 @@ def submit_doi_id(doi_id, expected_data):
     return ArsenicResponse(_submit_doi_id)
 
 
+def import_and_submit_arxiv_by_id(arxiv_id):
+    def _import_and_submit_arxiv_by_id():
+        return (
+            'The INSPIRE staff will review it and your changes will be added '
+            'to INSPIRE.'
+        ) in WebDriverWait(Arsenic(), 10).until(
+            EC.visibility_of_element_located(
+                (
+                    By.XPATH,
+                    '(//div[@class="alert alert-success alert-form-success"])',
+                )
+            )
+        ).text
+    Arsenic().find_element_by_id('arxiv_id').send_keys(arxiv_id)
+    WebDriverWait(Arsenic(), 10).until(
+        EC.visibility_of_element_located((By.ID, 'importData'))
+    ).click()
+    WebDriverWait(Arsenic(), 20).until(
+        EC.visibility_of_element_located((By.ID, 'acceptData'))
+    ).click()
+    WebDriverWait(Arsenic(), 20).until(
+        EC.visibility_of_element_located((By.ID, 'arxiv_id'))
+    )
+
+    _skip_import_data()
+
+    Arsenic().find_element_by_xpath(
+        '//div[@id="webdeposit_form_accordion"]/div[4]/span/button'
+    ).click()
+    Arsenic().show_title_bar()
+
+    return ArsenicResponse(_import_and_submit_arxiv_by_id)
+
+
 def _skip_import_data():
     Arsenic().hide_title_bar()
     WebDriverWait(Arsenic(), 10).until(
@@ -520,3 +554,10 @@ def _select_chapter():
     Select(Arsenic().find_element_by_id('type_of_doc')).select_by_value(
         'chapter'
     )
+
+
+def check_expected_data_in_record(expected_data, record):
+    check = True
+    for key in expected_data:
+        check = check and expected_data[key] in record
+    return check

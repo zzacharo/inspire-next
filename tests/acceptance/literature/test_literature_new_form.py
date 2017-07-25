@@ -22,10 +22,15 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
+
+from inspirehep.utils.record_getter import get_db_record
+
 from inspirehep.bat.pages import (
     create_literature,
     holding_panel_literature_detail,
     holding_panel_literature_list,
+    top_navigation_page
 )
 
 
@@ -54,7 +59,7 @@ def test_literature_create_chapter_manually(login):
 
     create_literature.go_to()
     assert create_literature.submit_chapter(input_data).has_error()
-    _check_back_office(input_data)
+    _check_back_office()
 
 
 def test_literature_create_book_manually(login):
@@ -85,7 +90,7 @@ def test_literature_create_book_manually(login):
 
     create_literature.go_to()
     assert create_literature.submit_book(input_data).has_error()
-    _check_back_office(input_data)
+    _check_back_office()
 
 
 def test_literature_create_thesis_manually(login):
@@ -116,7 +121,39 @@ def test_literature_create_thesis_manually(login):
 
     create_literature.go_to()
     assert create_literature.submit_thesis(input_data).has_error()
-    _check_back_office(input_data)
+    _check_back_office()
+
+
+def test_record_files_creation(login):
+    create_literature.go_to()
+    assert create_literature.import_and_submit_arxiv_by_id('hep-th/9711200').has_error()
+
+    expected_data = {
+        'title': (
+            'The Large N Limit of Superconformal Field Theories and '
+            'Supergravity'
+        ),
+        'user': 'admin@inspirehep.net',
+        'authors-0-name': 'Maldacena, Juan',
+        'abstract': (
+            'We show that the large $N$ limit of certain conformal field '
+            'theories'
+        )
+    }
+
+    _check_back_office(expected_data)
+    holding_panel_literature_detail.go_to()
+    submission_number = top_navigation_page.current_url().split('/')[-1]
+
+    from invenio_records.api import RecordMetadata
+
+    record = [record for record in RecordMetadata.query.all()
+              if 'acquisition_source' in record.json and record.json['acquisition_source']['submission_number'] == submission_number][0]
+
+    record = get_db_record('lit', record.json['control_number'])
+
+    for key in record.files.keys:
+        assert os.path.isfile(record.files[key].file.uri)
 
 
 def test_literature_create_article_journal_manually(login):
@@ -147,7 +184,7 @@ def test_literature_create_article_journal_manually(login):
 
     create_literature.go_to()
     assert create_literature.submit_journal_article(input_data).has_error()
-    _check_back_office(input_data)
+    _check_back_office()
 
 
 def test_literature_create_article_journal_with_proceeding_manually(login):
@@ -181,17 +218,15 @@ def test_literature_create_article_journal_with_proceeding_manually(login):
     assert create_literature.submit_journal_article_with_proceeding(
         input_data
     ).has_error()
-    _check_back_office(input_data)
+    _check_back_office()
 
 
-def _check_back_office(input_data):
+def _check_back_office(expected_data=None):
     holding_panel_literature_list.go_to()
-    assert holding_panel_literature_list.load_submitted_record().has_error()
+    assert holding_panel_literature_list.load_submitted_record(expected_data).has_error()
 
     holding_panel_literature_detail.go_to()
-    assert holding_panel_literature_detail.load_submitted_record(
-        input_data
-    ).has_error()
+    assert holding_panel_literature_detail.load_submitted_record(expected_data).has_error()
     assert holding_panel_literature_detail.accept_record().has_error()
 
     holding_panel_literature_list.go_to()
@@ -247,7 +282,7 @@ def test_import_from_arXiv(login):
     }
 
     create_literature.go_to()
-    assert create_literature.submit_arxiv_id(
+    assert create_literature.import_arxiv_id(
         'hep-th/9711200',
         expected_data,
     ).has_error()
