@@ -380,11 +380,12 @@ define(function(require, exports, module) {
      */
     function handle_response(data) {
       var errors = 0;
-
+      var names = [];
       if ('messages' in data) {
         $.each(data.messages, function(name, data) {
           if (handle_field_msg(name, data)) {
             errors++;
+            names.push({[name]: data});
           }
         });
       }
@@ -412,7 +413,7 @@ define(function(require, exports, module) {
         });
       }
 
-      return errors;
+      return errors, names;
     }
 
     /**
@@ -474,12 +475,12 @@ define(function(require, exports, module) {
           data: request_data
         })
       ).done(function(data) {
-        var errors = handle_response(data);
+        var errors, names = handle_response(data);
         if (errors) {
           set_status(tpl_status_saved_with_error());
-          // if(flash_message) {
-          //     _flash_message({state:'warning', message: tpl_save_error()});
-          // }
+          if(flash_message) {
+              _flash_message({state:'danger', message: tpl_save_error()});
+          }
           if (failure_callback !== undefined) {
             failure_callback();
           }

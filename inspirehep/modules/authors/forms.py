@@ -47,10 +47,10 @@ from inspirehep.modules.forms.filter_utils import clean_empty_list
 from inspirehep.modules.forms.validators.simple_fields import (
     duplicated_orcid_validator,
 )
-from inspirehep.modules.forms.validators.dynamic_fields import LessThan
+from inspirehep.modules.forms.validators.dynamic_fields import LessThan, AdvisorsValidation
 from inspirehep.modules.forms.validation_utils import (
     ORCIDValidator,
-    RegexpStopValidator,
+    RegexpStopValidator
 )
 
 
@@ -497,6 +497,7 @@ class AuthorUpdateForm(INSPIREForm):
         label='Advisors',
         add_label='Add another advisor',
         min_entries=1,
+        validators=[AdvisorsValidation],
         widget=DynamicUnsortedWidget(),
         widget_classes="ui-disable-sort"
     )

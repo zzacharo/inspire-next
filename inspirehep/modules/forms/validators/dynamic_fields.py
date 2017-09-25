@@ -49,6 +49,17 @@ class AuthorsValidation(object):
             raise StopValidation(message)
 
 
+class AdvisorsValidation(object):
+
+    def __init__(self, form, field):
+
+        unique_advisors = [dict(t) for t in set([tuple(d.items()) for d in field.data])]
+
+        if len(unique_advisors) != len(field.data):
+            message = 'Advisors should be unique.'
+            raise StopValidation(message)
+
+
 class LessThan(object):
     """
     Compares the values of two fields.
